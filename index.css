@@ -1,0 +1,50 @@
+:root{
+    --primary: #cc8500;
+    --secondary: #808080;
+    --dark: #131a26;
+    --light: #eee;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    font-family: 'Fira Sans', sans-serif;
+
+}
+
+.App{
+    min-height: 100vh;
+    min-width: 100%;
+    padding-left: 10%;
+    padding-right: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.dashboard {
+    display:flex;
+    flex-direction: column;
+    height:80%;
+    width: 50%;
+    flex: 1;
+    align-items: center;
+}
+.contactsPanel{
+    display:flex;
+    flex-direction: column;
+    height:80%;
+    width: 50%;
+    flex: 1;
+    align-items: center;
+}
+.contact{
+    border-style: solid;
+    border-top: none;
+    border-left: none;
+    border-bottom-color: grey;
+    border-right: none;
+    min-width:100%;
+    height: 100px;
+}
+
