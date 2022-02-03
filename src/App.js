@@ -6,14 +6,14 @@ class App extends React.Component {
         super(props);
         localStorage.getItem("users") ?
             this.state = {
-
                 user: {
                     name: '',
                     phoneNumber: ''
                 },
+                showSubmitButton:true,
                 name: '',
                 phoneNumber: '',
-                showButton: false,
+                showInputForm: false,
                 showEditForm: false,
                 users: JSON.parse(localStorage.getItem('users'))
             } :
@@ -23,11 +23,13 @@ class App extends React.Component {
                     phoneNumber: ''
                 },
                 name: '',
+                showSubmitButton:true,
                 phoneNumber: '',
-                showButton: false,
+                showInputForm: false,
                 showEditForm: false,
                 users: []
             }
+
     }
 
     handleChange = (event) => {
@@ -36,7 +38,6 @@ class App extends React.Component {
         });
     }
     handleSubmit = (event) => {
-        console.log('here')
         event.preventDefault();
         let object = {
             name: this.state.name,
@@ -46,7 +47,32 @@ class App extends React.Component {
         let array = [...this.state.users, object];
         localStorage.setItem("users", JSON.stringify(array));
         this.setState({
-            users: JSON.parse(localStorage.getItem('users'))
+            users: JSON.parse(localStorage.getItem('users')),
+            name:'',
+            phoneNumber:''
+        });
+    }
+    handleUpdate = (event) =>{
+        event.preventDefault();
+        let object = {
+            name: this.state.name,
+            phoneNumber: this.state.phoneNumber
+        };
+        let array =[];
+        this.state.users.map((u) =>{
+            (u.name === this.state.user.name &&
+                u.phoneNumber === this.state.user.phoneNumber) ?
+                array.push(object):
+                array.push(u);
+        })
+        localStorage.setItem("users", JSON.stringify(array));
+        this.setState({
+            users: JSON.parse(localStorage.getItem('users')),
+            showEditForm: false,
+            showInputForm: false,
+            showSubmitButton:true,
+            name:'',
+            phoneNumber:''
         });
     }
 
@@ -57,47 +83,81 @@ class App extends React.Component {
                 <div className="dashboard">
                     <div className="buttonSection">
                         <p>My contacts</p>
-                        <button onClick={() => this.setState({showButton: !this.state.showButton})}
+                        <button onClick={() =>
+                            this.setState({showInputForm: !this.state.showInputForm,
+                                showEditForm: false})}
                                 className="createNewContactButton">Create
                         </button>
-                        <button className="updateSelectedContactButton">Update</button>
-                        <button className="deleteSelectedContactButton">Delete</button>
                     </div>
-                    <div className="createContact">
-                        {this.state.showButton && <div className="inputForm">
-                            <label>
+                        {this.state.showInputForm && <div className="inputForm">
+                            {/*{this.state.showSubmitButton ? this.setState({name:'',phoneNumber:''}): ''}*/}
+                            <label className="nameLabel">
                                 Name:
                                 <input type="text" value={this.state.name} name="name"
                                        onChange={this.handleChange}/>
                             </label>
-                            <label>
+                            <label className="phoneNumberLabel">
                                 Phone number:
                                 <input type="text" value={this.state.phoneNumber} name="phoneNumber"
                                        onChange={this.handleChange}/>
                             </label>
-                            <button onClick={this.handleSubmit}>Submit</button>
+                            {this.state.showSubmitButton && <button onClick={this.handleSubmit}>Submit</button>}
+                            {!this.state.showSubmitButton && <button onClick={this.handleUpdate}>Update</button>}
                         </div>}
-                        <div className="editContactForm">
+                        {this.state.showEditForm && <div className="editContactForm">
                             <div>
                                 {this.state.user.name}
                             </div>
                             <div>
-                                {this.state.user.name}
+                                {this.state.user.phoneNumber}
                             </div>
-                        </div>
-                    </div>
+                            <button className="editSelectedContactButton" onClick={
+                                () => {
+                                    this.setState({showEditForm:false, showSubmitButton:false, showInputForm:true,
+                                    name:this.state.user.name, phoneNumber:this.state.user.phoneNumber});
+                                }
+                            }>Edit</button>
+                            <button className="deleteSelectedContactButton" onClick={
+                                () => {
+                                    let array = [];
+                                    this.state.users.map((u) => {
+                                        !(u.name === this.state.user.name &&
+                                        u.phoneNumber === this.state.user.phoneNumber) ?
+                                            array.push(u) :
+                                            alert("Contact deleted successfully!");
+                                    })
+                                    localStorage.setItem("users", JSON.stringify(array));
+                                    this.setState({
+                                        users: JSON.parse(localStorage.getItem('users')),
+                                        showEditForm: false
+                                    });
+                                }
+
+                            }>Delete</button>
+                        </div>}
 
 
-                    {/*<button onClick={() => this.setState({showButton: !this.state.showButton})} className="deleteSelectedContactButton">SHOW Button</button>*/}
-                    {/*{this.state.showButton && <button className="deleteSelectedContactButton">SHOW ME</button>}*/}
+
+                    {/*<button onClick={() => this.setState({showInputForm: !this.state.showInputForm})} className="deleteSelectedContactButton">SHOW Button</button>*/}
+                    {/*{this.state.showInputForm && <button className="deleteSelectedContactButton">SHOW ME</button>}*/}
                 </div>
                 <div className="contactsPanel">
 
-                    {this.state.users.map((user) => {
-                        console.log('user', user);
-                        return (<div className="contact" onClick={() => alert(user.name)}>
-                            <div className="name">{user.name}</div>
-                            <div className="Phone Number">{user.phoneNumber}</div>
+                    {this.state.users.map((u) => {
+                        console.log('user', u);
+                        return (<div className="contact" onClick={() => {
+                            let obj = {
+                                name: u.name,
+                                phoneNumber: u.phoneNumber
+                            }
+                            this.setState({user: obj,
+                                                showInputForm: false,
+                                                showEditForm: true});
+
+                        }
+                        }>
+                            <div className="name">{u.name}</div>
+                            <div className="Phone Number">{u.phoneNumber}</div>
                         </div>);
                     })}
                 </div>
